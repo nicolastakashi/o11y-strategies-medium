@@ -1,0 +1,49 @@
+version: '3.8'
+services:
+  proxy:
+    image: opentracing/nginx-opentracing
+    container_name: proxy
+    restart: unless-stopped
+    ports:
+      - 8080:8080
+    volumes:
+      - ./conf/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./conf/nginx/jaeger-config.json:/etc/jaeger-config.json
+
+  checkoutapi:
+    image: hashicorp/http-echo
+    container_name: checkoutapi
+    restart: unless-stopped
+    command: -text="Checkout API"
+  paymentapi:
+    image: hashicorp/http-echo
+    container_name: paymentapi
+    restart: unless-stopped
+    command: -text="Payment API"
+
+  proxy_exporter:
+    image: nginx/nginx-prometheus-exporter:0.10.0
+    container_name: proxy_exporter
+    restart: unless-stopped
+    command: -nginx.scrape-uri=http://proxy:8080/stub_status
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: unless-stopped
+    volumes:
+      - ./conf/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    ports:
+      - 9090:9090
+  
+  jaeger:
+    image: jaegertracing/all-in-one
+    restart: unless-stopped
+    ports:
+      - "16686:16686"
