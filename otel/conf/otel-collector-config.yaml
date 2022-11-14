@@ -1,0 +1,41 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+  
+  # Dummy receiver that's never used, because a pipeline is required to have one.
+  otlp/spanmetrics:
+    protocols:
+      grpc:
+        endpoint: "localhost:65535"
+
+processors:
+  batch:
+
+  spanmetrics:
+    metrics_exporter: prometheus
+
+exporters:
+  otlp:
+    endpoint: jaeger:4317
+    tls:
+      insecure: true
+
+  jaeger:
+    endpoint: "jaeger:4317"
+    tls:
+      insecure: true
+  
+  prometheus:
+    endpoint: "0.0.0.0:8989"
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [spanmetrics, batch]
+      exporters: [otlp]
+    
+    metrics/spanmetrics:
+      receivers: [otlp/spanmetrics]
+      exporters: [prometheus]
