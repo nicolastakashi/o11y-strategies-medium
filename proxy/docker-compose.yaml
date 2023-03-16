@@ -11,15 +11,14 @@ services:
       - ./conf/nginx/jaeger-config.json:/etc/jaeger-config.json
 
   checkoutapi:
-    image: hashicorp/http-echo
-    container_name: checkoutapi
-    restart: unless-stopped
-    command: -text="Checkout API"
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    
   paymentapi:
-    image: hashicorp/http-echo
-    container_name: paymentapi
-    restart: unless-stopped
-    command: -text="Payment API"
+    build:
+      context: ./app
+      dockerfile: Dockerfile
 
   proxy_exporter:
     image: nginx/nginx-prometheus-exporter:0.10.0

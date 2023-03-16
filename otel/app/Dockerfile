@@ -4,7 +4,9 @@ FROM python:3.8
 
 WORKDIR /app
 
-RUN pip3 install opentelemetry-distro opentelemetry-exporter-otlp flask
+# RUN pip3 install opentelemetry-distro opentelemetry-exporter-otlp flask requests
+
+RUN pip3 install opentelemetry-distro opentelemetry-exporter-otlp flask requests
 
 RUN opentelemetry-bootstrap --action=install
 
