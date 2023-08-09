@@ -21,7 +21,7 @@ func main() {
 	})
 
 	mux.HandleFunc("/checkouts", func(w http.ResponseWriter, req *http.Request) {
-		res, err := http.Get("http://proxy:8080/payments")
+		res, err := http.Get("http://ingressproxy:8080/payments")
 		if err != nil {
 			fmt.Printf("error making http request: %s\n", err)
 			os.Exit(1)

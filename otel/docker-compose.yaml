@@ -21,6 +21,7 @@ services:
     restart: unless-stopped
     command:
       - --collector.otlp.enabled=true
+      - --prometheus.query.support-spanmetrics-connector=true
     ports:
       - "16686:16686"
     environment:

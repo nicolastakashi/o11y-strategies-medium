@@ -15,7 +15,7 @@ install-cilium:
   	--set hubble.metrics.enabled="{dns,drop,tcp,flow,port-distribution,icmp,httpV2:exemplars=true;labelsContext=source_ip\,source_namespace\,source_workload\,destination_ip\,destination_namespace\,destination_workload\,traffic_direction}"
 
 install-monitoring:
-	@kubectl apply -f https://raw.githubusercontent.com/cilium/cilium/v1.13/examples/kubernetes/addons/prometheus/monitoring-example.yaml
+	@kubectl apply -f https://raw.githubusercontent.com/cilium/cilium/v1.14/examples/kubernetes/addons/prometheus/monitoring-example.yaml
 
 install-starwars:
 	@kubectl apply -f ./http-sw-app.yaml
@@ -26,7 +26,7 @@ restart-unmanaged-pods:
 sleep:
 	sleep 60
 
-setup: start-minikube install-cilium sleep restart-unmanaged-pods install-monitoring
+setup: start-minikube install-cilium sleep restart-unmanaged-pods install-monitoring install-starwars
 	@kubectl -n kube-system get pods
 
 port-forward-relay:

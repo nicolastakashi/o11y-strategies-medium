@@ -8,7 +8,7 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-  - port: 80
+    - port: 80
   selector:
     org: empire
     class: deathstar
@@ -35,35 +35,59 @@ spec:
         app.kubernetes.io/name: deathstar
     spec:
       containers:
-      - name: deathstar
-        image: docker.io/cilium/starwars
+        - name: deathstar
+          image: docker.io/cilium/starwars
 ---
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: tiefighter
-  annotations:
-    policy.cilium.io/proxy-visibility: "<Egress/53/UDP/DNS>,<Egress/80/TCP/HTTP>"
+  name: tiefighter-deployment
   labels:
     org: empire
     class: tiefighter
     app.kubernetes.io/name: tiefighter
 spec:
-  containers:
-  - name: spaceship
-    image: docker.io/tgraf/netperf
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: tiefighter
+  template:
+    metadata:
+      labels:
+        org: empire
+        class: tiefighter
+        app.kubernetes.io/name: tiefighter
+    spec:
+      containers:
+        - name: tiefighter
+          image: nicolaka/netshoot
+          command: ["/bin/sh", "-c"]
+          args:
+            - "while true; do curl -s -XPOST deathstar.default.svc.cluster.local/v1/request-landing; done"
 ---
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: xwing
-  annotations:
-    policy.cilium.io/proxy-visibility: "<Egress/53/UDP/DNS>,<Egress/80/TCP/HTTP>"
+  name: xwing-deployment
   labels:
     app.kubernetes.io/name: xwing
     org: alliance
     class: xwing
 spec:
-  containers:
-  - name: spaceship
-    image: docker.io/tgraf/netperf
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: xwing
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: xwing
+        org: alliance
+        class: xwing
+    spec:
+      containers:
+        - name: xwing
+          image: nicolaka/netshoot
+          command: ["/bin/sh", "-c"]
+          args:
+            - "while true; do curl -s -XPOST deathstar.default.svc.cluster.local/v1/request-landing; done"
